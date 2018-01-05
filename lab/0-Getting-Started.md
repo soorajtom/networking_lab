@@ -13,10 +13,10 @@ line tools that is required.
 
 3. Use `nc` to post a message on the IRC channel `##iitpkd-networking`
    at the freenode server. Use your rollno as the `nick` and only post
-   a hello message. I suggest you write a small shell
-   script here and also connect to the freenode irc server separately
-   so that you can test it out.
-
+   a hello message. I suggest you write a small shell script here and
+   also connect to the freenode irc server separately so that you can
+   test it out. For more details checkout
+   <https://modern.ircdocs.horse/>
 
 ### Important note
 
