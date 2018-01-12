@@ -58,7 +58,7 @@ void handle(int conn)
     /* The main loop of the server. Just sends a pong */
     write(conn, message,strlen(message));
 
-    close(conn);
+    shutdown(conn,2);
 }
 
     
