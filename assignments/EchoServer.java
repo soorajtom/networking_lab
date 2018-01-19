@@ -34,6 +34,18 @@ class EchoServer
 {
 	public static void main(String[] args) throws Exception
 	{
+		
+		if(args.length < 1)
+		{
+			System.out.println("Please give a port number as an argument");
+			return;
+		}
+		else if(!args[0].matches("^[0-9]+$"))
+		{
+			System.out.println("Please Enter a number between 1025 and 65535 for port");
+			return;
+		}
+
 		int portNumber = Integer.parseInt(args[0]);
 
 		ServerSocket serverSocket = new ServerSocket(portNumber);
