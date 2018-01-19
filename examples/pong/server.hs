@@ -2,6 +2,7 @@
 import Network.Socket hiding (send)
 import Network.Socket.ByteString
 
+main :: IO ()
 main = do
   sock <- socket AF_INET Stream 0
   setSocketOption sock ReuseAddr 1
@@ -15,8 +16,8 @@ mainLoop sock = do
   worker conn
   mainLoop sock
 
-
+worker :: (Socket, SockAddr) -> IO ()
 worker (sock,address) = do putStrLn $ unwords ["from", show address]
                            send sock "pong"
-                           close sock
+                           shutdown sock ShutdownBoth
 
