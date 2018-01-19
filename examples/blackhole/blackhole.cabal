@@ -1,0 +1,31 @@
+name:        blackhole
+version:     0.1.0.0
+synopsis:    A tcp server that eats up all the data that is sent to it.
+
+description: A black hole is a celestial object that does not even
+  allow light out of it. A blackhole server is a tcp server that eats
+  up all the data that is sent to it. It is the example of a receiver
+  which has nothing to send back so essentially the tcp connection to
+  it functions like a one-way communication. It can be used to
+  demonstrate various aspects of
+
+
+
+license:             BSD3
+license-file:        LICENSE
+author:              Piyush P Kurur
+maintainer:          ppk@cse.iitk.ac.in
+-- copyright:
+category:            Network
+build-type:          Simple
+extra-source-files:  ChangeLog.md
+cabal-version:       >=1.10
+
+executable blackhole
+  main-is:             Main.hs
+  -- other-modules:
+  -- other-extensions:
+  build-depends: base >=4.9 && <4.10
+               , network
+  -- hs-source-dirs:
+  default-language:    Haskell2010

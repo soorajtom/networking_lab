@@ -1,0 +1,14 @@
+*.o
+*.hi
+dist
+dist-newstyle
+tags
+TAGS
+.cabal-sandbox
+*test
+.hpc
+cabal.sandbox.config
+.stack-work
+.liquid
+*.s
+a.out
