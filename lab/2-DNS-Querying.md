@@ -24,7 +24,8 @@ packet. The server responds with a UDP packet that has the answer.
 The DNS packet is at most 512 bytes in size, which you can use as a
 limit on your packet size. See the url for a brief idea of the dns message format.
 
-<http://www.tcpipguide.com/free/t_DNSMessageHeaderandQuestionSectionFormat.htm>
+<http://www.tcpipguide.com/free/t_DNSMessagingandMessageResourceRecordandMasterFileF.htm>
+
 
 Note: When you solve 2, you are building a toy _authoritative dns_
 server. This is the simplest kind of DNS server. The more complicated
