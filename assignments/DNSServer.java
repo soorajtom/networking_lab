@@ -26,7 +26,7 @@ class DNSServer
                   //     System.out.print("0x" + String.format("%x", query[i]) + " " );
                   // }
                   response = query;
-                  response[2] = (byte)0b10100000; //Response, authoritative
+                  response[2] = (byte)0b10000100; //Response, authoritative
 
                   int pointer = 12;
                   String domainname = "";
@@ -43,6 +43,9 @@ class DNSServer
                      else
                         break;
                   }
+
+
+
 
                   if(domainname.equals("www.james.bond"))
                   {
