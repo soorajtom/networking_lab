@@ -106,7 +106,7 @@ public class DNSClient {
 
     public static void parseresponse(byte[] response)
     {
-        int no_res = ((int)response[6]) * 512 + ((int)response[7]);
+        int no_res = ((int)response[6]) * 256 + ((int)response[7]);
         // System.out.println(no_res);
 
         int pointer;
@@ -125,10 +125,10 @@ public class DNSClient {
 
         for(int i=0; i<no_res; i++)
         {
-            int type =  ((int) response[pointer + 2]) * 512 + ((int) response[pointer + 3]);
+            int type =  ((int) response[pointer + 2]) * 256 + ((int) response[pointer + 3]);
             // System.out.print("Type: ");
             // System.out.println(type);
-            int len = ((int) response[pointer + 10]) * 512 + ((int) response[pointer + 11]);
+            int len = ((int) response[pointer + 10]) * 256 + ((int) response[pointer + 11]);
             // System.out.println(len);
             if(type == 1)
             {
