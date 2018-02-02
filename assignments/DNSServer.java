@@ -6,7 +6,7 @@ class DNSServer
    public static void main(String args[]) throws Exception
       {
          int serverport = 53;
-
+         int responselen = 0;
          if(args.length > 0)
          {
             serverport = Integer.parseInt(args[0]);
@@ -72,16 +72,18 @@ class DNSServer
                      response[45] = 7;
                      response[46] = 7;
                      response[47] = 7;
+                     responselen = 48;
                   }
                   else
                   {
                      response[3] = 0b00000011;  //Response code
+                     responselen = 32;
                   }
 
                   InetAddress IPAddress = receivePacket.getAddress();
                   int port = receivePacket.getPort();
 
-                  DatagramPacket sendPacket = new DatagramPacket(response, response.length, IPAddress, port);
+                  DatagramPacket sendPacket = new DatagramPacket(response, responselen, IPAddress, port);
                   serverSocket.send(sendPacket);
                }
       }
