@@ -5,7 +5,15 @@ class DNSServer
 {
    public static void main(String args[]) throws Exception
       {
-         DatagramSocket serverSocket = new DatagramSocket(53);
+         int serverport = 53;
+
+         if(args.length > 0)
+         {
+            serverport = Integer.parseInt(args[0]);
+         }
+
+         DatagramSocket serverSocket = new DatagramSocket(serverport);
+         System.out.println("Starting server on port:" + serverport);
             byte[] query = new byte[1024];
             byte[] response = new byte[1024];
             while(true)

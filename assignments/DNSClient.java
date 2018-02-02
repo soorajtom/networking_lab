@@ -8,6 +8,12 @@ public class DNSClient {
 
         InetAddress ipAddress = InetAddress.getByName(args[1]);
 
+        int serverport = 53;
+
+        if(args.length > 2)
+         {
+            serverport = Integer.parseInt(args[2]);
+         }
         byte[] request = new byte[512];
         int pointer = 12;
 
@@ -63,7 +69,7 @@ public class DNSClient {
 
         // *** Send DNS Request Frame ***
         DatagramSocket socket = new DatagramSocket();
-        DatagramPacket dnsReqPacket = new DatagramPacket(request, request.length, ipAddress, 53);
+        DatagramPacket dnsReqPacket = new DatagramPacket(request, request.length, ipAddress, serverport);
         socket.send(dnsReqPacket);
 
         // Await response from DNS server
