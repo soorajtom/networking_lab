@@ -1,4 +1,7 @@
 import socket, sys
+import select
+import time
+# import regex
 from struct import *
 
 def checksum(source_string):
@@ -47,9 +50,9 @@ def checksum(source_string):
     answer = socket.htons(answer)
     return answer
 
-def send_as_raw(source_ip, dest_ip, payload, proto = socket.IPPROTO_TCP, size = 54, chksum = 0):
+def ip_wrapper(source_ip, dest_ip, payload, proto, size = 0, chksum = 0):
 	try:
-	    s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+	    sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
 	except socket.error , msg:
 	    print 'Socket could not be created. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
 	    sys.exit()
@@ -67,18 +70,43 @@ def send_as_raw(source_ip, dest_ip, payload, proto = socket.IPPROTO_TCP, size = 
 
 	packet = ip_header + payload
 
-	s.sendto(packet, (dest_ip , 0 ))
+	sock.sendto(packet, (dest_ip , 0 ))
 
-	return ip_header
-
-def pinger(dest_ip):
+def pinger(dest_ip, count = 1):
 
 	icmp_header_sample = pack('!BBBBi', 8, 0, 0, 0, 0)
 
 	icmp_header = pack('!BBHi', 8, 0, (checksum(icmp_header_sample)), 0)
 
-	send_as_raw("127.0.0.1", dest_ip, icmp_header, socket.IPPROTO_ICMP )
+	for i in range(0, count):
+		ip_wrapper("0.0.0.0", dest_ip, icmp_header, socket.IPPROTO_ICMP )
+		start = time.time()
+		sock = socket.socket(socket.AF_INET,socket.SOCK_RAW,socket.IPPROTO_ICMP)
+		sock.setsockopt(socket.SOL_IP, socket.IP_HDRINCL, 1)
 
-pinger('127.0.0.7')
+		inputs = [sock]
+		outputs = []
+		readable, _, _ = select.select(inputs, outputs, inputs, 1)
 
-# newiphead = send_as_raw('127.0.0.1','127.0.0.7', pack('BBBBBB',65,66,67,68,69,70))
+		if not readable:
+			print('The ping operation timed out')
+		else:
+			data, (addr, _) = sock.recvfrom(1508)
+			if(addr == dest_ip):
+				type(data)
+				ver_ihl, _, recsize, _ = unpack("!BBhp", data[:5])
+				ihl = ver_ihl & 0b00001111
+				if(data[ihl * 4] == '\x00'):
+					end = time.time()
+					print("Reply from " + dest_ip + " in " + str(int((end - start) * 1000)) + "ms")
+				# print("data = " + ":" . join(hex(ord(x))[2:] for x in data))
+			# else:
+			# 	print("Somebody else replied :O " + str(addr))
+
+if __name__ == "__main__":
+	# print re.match("\number:\number:\number:\number", sys.argv[1])
+	destip = sys.argv[1]
+	pinger(destip, 4)
+# pinger('10.64.13.31', 5)
+
+# newiphead = ip_wrapper('127.0.0.1','127.0.0.7', pack('BBBBBB',65,66,67,68,69,70))
