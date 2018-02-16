@@ -104,5 +104,5 @@ def pinger(dest_ip, count = 1):
 
 if __name__ == "__main__":
 	# print re.match("\number:\number:\number:\number", sys.argv[1])
-	destip = sys.argv[1]
+	destip = socket.gethostbyname(sys.argv[1])
 	pinger(destip, 4)
