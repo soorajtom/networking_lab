@@ -82,38 +82,37 @@ def ip_wrapper(source_ip, dest_ip, payload, proto, size = 0, chksum = 0):
 	sock.sendto(packet, (dest_ip , 0 ))
 
 def pong():
-
+	pongport = 9999
 	try:
-	    sock = socket.socket(socket.AF_INET,socket.SOCK_RAW, socket.IPPROTO_UDP)
+	    sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+	    sock.bind(("0.0.0.0", pongport))
 	except socket.error , msg:
 	    print 'Socket could not be created. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
 	    sys.exit()
-	# sock = socket.socket(socket.AF_INET,socket.SOCK_RAW, socket.IPPROTO_UDP)
-	# sock.setsockopt(socket.SOL_IP, socket.IP_HDRINCL, 1)
 	nativeip = list(get_ip_addresses(socket.AF_INET))
+	print "listening to port " + str(pongport) + " on "
+	print(nativeip)
 	while 1:
-		data, (addr, _) = sock.recvfrom(1024)
+		data, (addr, sport) = sock.recvfrom(1024)
+		# data, (addr, sport) = sock.accept()
 
-		srcip, destip = unpack("!4s4s", data[12:20])
-		ip1, ip2, ip3, ip4 = unpack("!BBBB", destip)
-		# ipformat = socket.inet_aton ( srcip )
-		properip = (str(ip1) + "." + str(ip2) + "." + str(ip3) + "." + str(ip4))
-		print properip
-		if(properip in nativeip):
-			ver_ihl, _, recsize, _ = unpack("!BBhp", data[:5])
-			ihl = ver_ihl & 0b00001111
-			sport, dport, length = unpack("!HHH", data[ihl*4:ihl*4 + 6])
+		# srcip, destip = unpack("!4s4s", data[12:20])
+		# ip1, ip2, ip3, ip4 = unpack("!BBBB", destip)
+		# # ipformat = socket.inet_aton ( srcip )
+		# properip = (str(ip1) + "." + str(ip2) + "." + str(ip3) + "." + str(ip4))
+		# # print properip
+		# if(addr in nativeip):
+		content = data
+		print addr + ":" + str(sport) + " says " + content
 
-			content = data[ihl*4 + 8:]
-			print addr + " says " + content + " through " + str(sport) + " thrown at " + str(dport)
+		
+		dport = sport
+		sport = pongport
+		udp_header_sample = pack('!HHHH4s', sport, dport, 12, 0, "pong")
+		udp_header = pack('!HHHH4s', sport, dport, 12, (checksum(udp_header_sample)), "pong")
 
-			udp_header_sample = pack('!HHHH4s', dport, sport, 12, 0, "pong")
-			udp_header = pack('!HHHH4s', dport, sport, 12, (checksum(udp_header_sample)), "pong")
-
-			ip_wrapper(properip, addr, udp_header, socket.IPPROTO_UDP)
+		ip_wrapper("0.0.0.0", addr, udp_header, socket.IPPROTO_UDP)
 
 
 if __name__ == "__main__":
-	# print re.match("\number:\number:\number:\number", sys.argv[1])
 	pong()
-	# print list(get_ip_addresses(socket.AF_INET))
