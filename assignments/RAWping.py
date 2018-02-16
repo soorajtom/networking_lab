@@ -91,13 +91,13 @@ def pinger(dest_ip, count = 1):
 		else:
 			data, (addr, _) = sock.recvfrom(1508)
 			if(addr == dest_ip):
-				ver_ihl, _, recsize, _ = unpack("!BBhp", data[:5])
+				ver_ihl, _, _, ttl = unpack("!BB6sB", data[:9])
 				ihl = ver_ihl & 0b00001111
 				if(data[ihl * 4] == '\x00'):
 					end = time.time()
 					_, idf, seq = unpack("!pHH", data[(ihl*4 + 3): (ihl*4 + 8)])
 					if(idf == 1234):
-						print("Reply from " + dest_ip + " in " + str(int((end - start) * 1000)) + "ms seq: " + str(seq) )
+						print("Reply from " + dest_ip + " in " + str(int((end - start) * 1000)) + "ms seq: " + str(seq) + " ttl: " + str(ttl))
 				# print("data = " + ":" . join(hex(ord(x))[2:] for x in data))
 			# else:
 			# 	print("Somebody else replied :O " + str(addr))
