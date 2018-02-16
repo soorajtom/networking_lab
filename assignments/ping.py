@@ -73,20 +73,21 @@ def ip_wrapper(source_ip, dest_ip, payload, proto, size = 0, chksum = 0):
 	sock.sendto(packet, (dest_ip , 0 ))
 
 def pinger(dest_ip, count = 1):
+	# icmp_header_sample = pack('!BBBBi', 8, 0, 0, 0, 0)
 
-	icmp_header_sample = pack('!BBBBi', 8, 0, 0, 0, 0)
-
-	icmp_header = pack('!BBHi', 8, 0, (checksum(icmp_header_sample)), 0)
+	# icmp_header = pack('!BBHi', 8, 0, (checksum(icmp_header_sample)), 0)
 	sock = socket.socket(socket.AF_INET,socket.SOCK_RAW,socket.IPPROTO_ICMP)
-	# sock.setsockopt(socket.SOL_IP, socket.IP_HDRINCL, 1)
-
+	sock.setsockopt(socket.SOL_IP, socket.IP_HDRINCL, 1)
 	for i in range(0, count):
+		icmp_header_sample = pack('!BBHHH', 8, 0, 0, 1234, i)
+		icmp_header = pack('!BBHHH', 8, 0, (checksum(icmp_header_sample)), 1234, i)
+
 		ip_wrapper("0.0.0.0", dest_ip, icmp_header, socket.IPPROTO_ICMP )
 		start = time.time()
 
 		inputs = [sock]
 		outputs = []
-		readable, _, _ = select.select(inputs, outputs, [], 1)
+		readable, _, _ = select.select(inputs, outputs, inputs, 5)
 
 		if not readable:
 			print('The ping operation timed out')
@@ -97,7 +98,9 @@ def pinger(dest_ip, count = 1):
 				ihl = ver_ihl & 0b00001111
 				if(data[ihl * 4] == '\x00'):
 					end = time.time()
-					print("Reply from " + dest_ip + " in " + str(int((end - start) * 1000)) + "ms")
+					_, idf, seq = unpack("!pHH", data[(ihl*4 + 3): (ihl*4 + 8)])
+					if(idf == 1234):
+						print("Reply from " + dest_ip + " in " + str(int((end - start) * 1000)) + "ms seq: " + str(seq) )
 				# print("data = " + ":" . join(hex(ord(x))[2:] for x in data))
 			# else:
 			# 	print("Somebody else replied :O " + str(addr))
