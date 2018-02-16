@@ -77,23 +77,22 @@ def pinger(dest_ip, count = 1):
 	icmp_header_sample = pack('!BBBBi', 8, 0, 0, 0, 0)
 
 	icmp_header = pack('!BBHi', 8, 0, (checksum(icmp_header_sample)), 0)
+	sock = socket.socket(socket.AF_INET,socket.SOCK_RAW,socket.IPPROTO_ICMP)
+	# sock.setsockopt(socket.SOL_IP, socket.IP_HDRINCL, 1)
 
 	for i in range(0, count):
 		ip_wrapper("0.0.0.0", dest_ip, icmp_header, socket.IPPROTO_ICMP )
 		start = time.time()
-		sock = socket.socket(socket.AF_INET,socket.SOCK_RAW,socket.IPPROTO_ICMP)
-		sock.setsockopt(socket.SOL_IP, socket.IP_HDRINCL, 1)
 
 		inputs = [sock]
 		outputs = []
-		readable, _, _ = select.select(inputs, outputs, inputs, 1)
+		readable, _, _ = select.select(inputs, outputs, [], 1)
 
 		if not readable:
 			print('The ping operation timed out')
 		else:
 			data, (addr, _) = sock.recvfrom(1508)
 			if(addr == dest_ip):
-				type(data)
 				ver_ihl, _, recsize, _ = unpack("!BBhp", data[:5])
 				ihl = ver_ihl & 0b00001111
 				if(data[ihl * 4] == '\x00'):
