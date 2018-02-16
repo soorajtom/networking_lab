@@ -59,7 +59,7 @@ def get_ip_addresses(family):
                 # yield socket.inet_aton(snic.address)
                 yield (snic.address)
 
-def ip_wrapper(source_ip, dest_ip, payload, proto, size = 0, chksum = 0):
+def ip_wrapper(source_ip, dest_ip, payload, proto, dport = 0, size = 0, chksum = 0):
 	try:
 	    sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
 	except socket.error , msg:
@@ -79,7 +79,7 @@ def ip_wrapper(source_ip, dest_ip, payload, proto, size = 0, chksum = 0):
 
 	packet = ip_header + payload
 
-	sock.sendto(packet, (dest_ip , 0 ))
+	sock.sendto(packet, (dest_ip , dport ))
 
 def pong():
 	pongport = 9999
@@ -94,8 +94,6 @@ def pong():
 	print(nativeip)
 	while 1:
 		data, (addr, sport) = sock.recvfrom(1024)
-		# data, (addr, sport) = sock.accept()
-
 		# srcip, destip = unpack("!4s4s", data[12:20])
 		# ip1, ip2, ip3, ip4 = unpack("!BBBB", destip)
 		# # ipformat = socket.inet_aton ( srcip )
@@ -105,14 +103,11 @@ def pong():
 		content = data
 		print addr + ":" + str(sport) + " says " + content
 
-		
 		dport = sport
 		sport = pongport
-		udp_header_sample = pack('!HHHH4s', sport, dport, 12, 0, "pong")
-		udp_header = pack('!HHHH4s', sport, dport, 12, (checksum(udp_header_sample)), "pong")
+		udp_header = pack('!HHHH4s', sport, dport, 12, 0, "pong")
 
-		ip_wrapper("0.0.0.0", addr, udp_header, socket.IPPROTO_UDP)
-
+		ip_wrapper("0.0.0.0", addr, udp_header, socket.IPPROTO_UDP, dport)
 
 if __name__ == "__main__":
 	pong()
