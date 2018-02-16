@@ -73,9 +73,6 @@ def ip_wrapper(source_ip, dest_ip, payload, proto, size = 0, chksum = 0):
 	sock.sendto(packet, (dest_ip , 0 ))
 
 def pinger(dest_ip, count = 1):
-	# icmp_header_sample = pack('!BBBBi', 8, 0, 0, 0, 0)
-
-	# icmp_header = pack('!BBHi', 8, 0, (checksum(icmp_header_sample)), 0)
 	sock = socket.socket(socket.AF_INET,socket.SOCK_RAW,socket.IPPROTO_ICMP)
 	sock.setsockopt(socket.SOL_IP, socket.IP_HDRINCL, 1)
 	for i in range(0, count):
@@ -109,6 +106,3 @@ if __name__ == "__main__":
 	# print re.match("\number:\number:\number:\number", sys.argv[1])
 	destip = sys.argv[1]
 	pinger(destip, 4)
-# pinger('10.64.13.31', 5)
-
-# newiphead = ip_wrapper('127.0.0.1','127.0.0.7', pack('BBBBBB',65,66,67,68,69,70))
