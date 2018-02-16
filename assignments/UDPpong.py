@@ -81,8 +81,8 @@ def ip_wrapper(source_ip, dest_ip, payload, proto, dport = 0, size = 0, chksum =
 
 	sock.sendto(packet, (dest_ip , dport ))
 
-def pong():
-	pongport = 9999
+def pong(pongport = 9999):
+	
 	try:
 	    sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 	    sock.bind(("0.0.0.0", pongport))
@@ -105,9 +105,9 @@ def pong():
 
 		dport = sport
 		sport = pongport
-		udp_header = pack('!HHHH4s', sport, dport, 12, 0, "pong")
+		udp_header = pack('!HHHH6s', sport, dport, 14, 0, "pong\n\n")
 
 		ip_wrapper("0.0.0.0", addr, udp_header, socket.IPPROTO_UDP, dport)
 
 if __name__ == "__main__":
-	pong()
+	pong(int(sys.argv[1]))
